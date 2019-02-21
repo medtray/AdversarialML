@@ -1,0 +1,2 @@
+model_checkpoint_path: "dog_v_fish_cold_graph"
+all_model_checkpoint_paths: "dog_v_fish_cold_graph"
