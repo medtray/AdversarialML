@@ -359,7 +359,7 @@ def do_optimization(targetImg, baseImg, MaxIter=200, coeffSimInp=0.25, saveInter
     sess.close()
     tf.reset_default_graph()
 
-    return np.squeeze(old_image).astype(np.uint8), finalDiff
+    return np.squeeze(old_image).astype(np.uint8), finalDiff,poisonDiff
 
 
 
@@ -485,7 +485,7 @@ def find_poison_adversarial(targetImg, baseImg, MaxIter=200, coeffSimInp=0.25,co
     sess.close()
     tf.reset_default_graph()
 
-    return np.squeeze(old_poison).astype(np.uint8),np.squeeze(old_adv).astype(np.uint8), finalDiff
+    return np.squeeze(old_poison).astype(np.uint8),np.squeeze(old_adv).astype(np.uint8), finalDiff,poisonDiff,advDiff
 
 
 

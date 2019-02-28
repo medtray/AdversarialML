@@ -49,16 +49,30 @@ Y_test = np.load(directorySaving+all_datas[5]+'.npy')
 print('done loading data i.e. the train-test split!')
 
 # some intializations before we actually make the poisons
-allPoisons = []
-allAdv = []
+allPoisonsOnly = []
+allAdvOnly = []
+allPoisonsCombined = []
+allAdvCombined = []
+distortionPoisonsOnly = []
+distortionAdvOnly = []
+distortionPoisonsCombined_ = []
+distortionAdvCombined = []
 alldiffs = []
-directoryForPoisons = './poisonImages/'
-if not os.path.exists(directoryForPoisons):
-    os.makedirs(directoryForPoisons)
+directoryForPoisonsOnly = './poisonImagesOnly/'
+if not os.path.exists(directoryForPoisonsOnly):
+    os.makedirs(directoryForPoisonsOnly)
 
-directoryForadv = './advImages/'
-if not os.path.exists(directoryForadv):
-    os.makedirs(directoryForadv)
+directoryForadvOnly = './advImagesOnly/'
+if not os.path.exists(directoryForadvOnly):
+    os.makedirs(directoryForadvOnly)
+
+directoryForPoisonsCombined = './poisonImagesCombined/'
+if not os.path.exists(directoryForPoisonsCombined):
+    os.makedirs(directoryForPoisonsCombined)
+
+directoryForadvCombined = './advImagesCombined/'
+if not os.path.exists(directoryForadvCombined):
+    os.makedirs(directoryForadvCombined)
 
 #len(X_test)
 for i in range(1):
@@ -82,24 +96,40 @@ for i in range(1):
             ind = possible_indices[ind]
             baseImg = X_inp_test[ind]
 
-        #img, diff = do_optimization(targetImg, baseImg, MaxIter=1500, coeffSimInp=0.2, saveInterim=False, imageID=i,
-                                    #objThreshold=2.9)
+        only_poison, diff_poison,diff_poison_with_base = do_optimization(targetImg, baseImg, MaxIter=1500, coeffSimInp=0.2, saveInterim=False, imageID=i,
+                                    objThreshold=3)
+        only_adv, diff_adv,diff_adv_with_target = do_optimization(baseImg, targetImg, MaxIter=1500, coeffSimInp=0.2, saveInterim=False,
+                                            imageID=i,
+                                            objThreshold=3)
         img,img2, diff = find_poison_adversarial(targetImg, baseImg, MaxIter=1500, coeffSimInp=0.2,coeffTar=0.1, saveInterim=False, imageID=i,
                                     objThreshold=1)
         print('built poison for target %d with diff: %.5f' % (i, diff))
         counter += 1
     # save the image to file and keep statistics
-    allPoisons.append(img)
-    allAdv.append(img2)
-    alldiffs.append(diff)
-    name = "%d_%.5f" % (i, diff)
-    misc.imsave(directoryForPoisons + name + '.jpeg', img)
-    misc.imsave(directoryForadv + name + '.jpeg', img2)
+    allPoisonsOnly.append(only_poison)
+    allAdvOnly.append(only_adv)
+    allPoisonsCombined.append(img)
+    allAdvCombined.append(img2)
+    #alldiffs.append(diff)
 
-allPoisons = np.array(allPoisons)
-allAdv = np.array(allAdv)
-alldiffs = np.array(alldiffs)
-np.save('all_poisons.npy', allPoisons)
-np.save('all_adv.npy', allAdv)
-np.save('alldiffs.npy', alldiffs)
+    name = "%d_%.5f" % (i, diff_poison)
+    misc.imsave(directoryForPoisonsOnly + name + '.jpeg', only_poison)
+    name = "%d_%.5f" % (i, diff_adv)
+    misc.imsave(directoryForadvOnly + name + '.jpeg', only_adv)
+    name = "%d_%.5f" % (i, diff)
+    misc.imsave(directoryForPoisonsCombined + name + '.jpeg', img)
+    misc.imsave(directoryForadvCombined + name + '.jpeg', img2)
+
+allPoisonsOnly = np.array(allPoisonsOnly)
+allAdvOnly = np.array(allAdvOnly)
+allPoisonsCombined = np.array(allPoisonsCombined)
+allAdvCombined = np.array(allAdvCombined)
+#alldiffs = np.array(alldiffs)
+
+np.save('all_poisons_only.npy', allPoisonsOnly)
+np.save('all_adv_only.npy', allAdvOnly)
+np.save('all_poisons_combined.npy', allPoisonsCombined)
+np.save('all_adv_combined.npy', allAdvCombined)
+
+#np.save('alldiffs.npy', alldiffs)
 print 'done'
